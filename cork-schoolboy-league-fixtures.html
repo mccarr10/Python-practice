@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Fixtures Viewer</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f4f4f4; }
+    h1 { text-align: center; }
+    select { margin: 10px; padding: 5px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+    th { background: #2e8b57; color: white; }
+  </style>
+</head>
+<body>
+
+<h1>U7–U11 Fixtures Viewer</h1>
+
+<label for="ageGroup">Age Group:</label>
+<select id="ageGroup">
+  <option value="">All</option>
+  <option value="U7">U7</option>
+  <option value="U8">U8</option>
+  <option value="U9">U9</option>
+  <option value="U10">U10</option>
+  <option value="U11">U11</option>
+</select>
+
+<label for="team">Team:</label>
+<select id="team">
+  <option value="">All</option>
+  <option value="Midleton">Midleton</option>
+  <option value="Carrigaline United">Carrigaline United</option>
+  <option value="Avondale United">Avondale United</option>
+  <!-- Add more teams as needed -->
+</select>
+
+<table id="fixturesTable">
+  <thead>
+    <tr>
+      <th>Date</th>
+      <th>Age Group</th>
+      <th>Home</th>
+      <th>Away</th>
+      <th>Venue</th>
+      <th>Time</th>
+    </tr>
+  </thead>
+  <tbody id="fixturesBody">
+    <!-- Fixtures will be inserted here -->
+  </tbody>
+</table>
+
+<script>
+const fixtures = [
+  { date: "Sat 28 Mar 2026", age: "U9", home: "Midleton", away: "Ringmahon Rangers", venue: "Midleton College Cricket Pitch", time: "17:00" },
+  { date: "Sat 4 Apr 2026", age: "U9", home: "Idle", away: "Midleton", venue: "-", time: "17:00" },
+  { date: "Sat 11 Apr 2026", age: "U9", home: "Avondale United", away: "Midleton", venue: "Beaumont Park", time: "17:00" },
+  { date: "Sat 18 Apr 2026", age: "U9", home: "Midleton", away: "Kinsale", venue: "Midleton College Cricket Pitch", time: "17:00" },
+  { date: "Sat 25 Apr 2026", age: "U9", home: "Carrigaline United", away: "Midleton", venue: "Ballea Park", time: "17:00" },
+  { date: "Sat 2 May 2026", age: "U9", home: "Midleton", away: "Blarney United", venue: "Midleton College Cricket Pitch", time: "17:00" },
+  { date: "Sat 9 May 2026", age: "U9", home: "Ballincollig", away: "Midleton", venue: "The Landing Field", time: "17:00" },
+  { date: "Sat 16 May 2026", age: "U9", home: "Ringmahon Rangers", away: "Midleton", venue: "Ringmahon Park", time: "17:00" },
+  { date: "Sat 23 May 2026", age: "U9", home: "Midleton", away: "Idle", venue: "-", time: "17:00" },
+  { date: "Sat 30 May 2026", age: "U9", home: "Midleton", away: "Avondale United", venue: "Midleton College Cricket Pitch", time: "17:00" },
+  { date: "Sat 6 Jun 2026", age: "U9", home: "Kinsale", away: "Midleton", venue: "Kinsale Community School A/W", time: "17:00" }
+];
+
+function renderFixtures() {
+  const ageGroup = document.getElementById("ageGroup").value;
+  const team = document.getElementById("team").value;
+  const tbody = document.getElementById("fixturesBody");
+  tbody.innerHTML = "";
+
+  fixtures
+    .filter(f => (!ageGroup || f.age === ageGroup) && (!team || f.home === team || f.away === team))
+    .forEach(f => {
+      const row = `<tr>
+        <td>${f.date}</td>
+        <td>${f.age}</td>
+        <td>${f.home}</td>
+        <td>${f.away}</td>
+        <td>${f.venue}</td>
+        <td>${f.time}</td>
+      </tr>`;
+      tbody.innerHTML += row;
+    });
+}
+
+document.getElementById("ageGroup").addEventListener("change", renderFixtures);
+document.getElementById("team").addEventListener("change", renderFixtures);
+
+renderFixtures();
+</script>
+
+</body>
+</html>
