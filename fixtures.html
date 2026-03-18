@@ -88,6 +88,7 @@
     margin: 16px 0;
     border-radius: 16px;
     box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+    border-left: 10px solid #007aff;
   }
 
   .fixture-header {
@@ -129,6 +130,53 @@
 <div id="fixtureCards"></div>
 
 <script>
+/* TEAM COLOURS */
+const teamColours = {
+  "Avondale United": ["#0033cc", "#ffffff"],
+  "Ballincollig": ["#008000", "#ffffff"],
+  "Ballinhassig": ["#0033cc", "#ffcc00"],
+  "Bandon": ["#0033cc", "#ffffff"],
+  "Carrigaline United": ["#ffcc00", "#0033cc"],
+  "Carrigtwohill United": ["#0033cc", "#ffffff"],
+  "Castleview": ["#cc0000", "#ffffff"],
+  "Churchvilla": ["#cc0000", "#000000"],
+  "Corkbeg": ["#ffffff", "#0033cc"],
+  "Corinthian Boys": ["#cc0000", "#ffffff"],
+  "Crosshaven": ["#0033cc", "#ffffff"],
+  "Douglas Hall": ["#ffcc00", "#0033cc"],
+  "Everton": ["#0033cc", "#ffffff"],
+  "Fermoy": ["#ffcc00", "#000000"],
+  "Grenagh United": ["#008000", "#ffffff"],
+  "Innishvilla": ["#800000", "#ffffff"],
+  "Kanturk": ["#008000", "#ffffff"],
+  "Kilreen Celtic": ["#008000", "#ffffff"],
+  "Kinsale": ["#000000", "#ffffff"],
+  "Lakewood Athletic": ["#008000", "#ffffff"],
+  "Leeds AFC": ["#0033cc", "#ffcc00"],
+  "Leeside": ["#cc0000", "#000000"],
+  "Los Zarcos": ["#0033cc", "#ffffff"],
+  "Macroom": ["#008000", "#ffffff"],
+  "Mallow United": ["#ffcc00", "#000000"],
+  "Mallow Town": ["#0033cc", "#ffffff"],
+  "Mayfield United": ["#cc0000", "#000000"],
+  "Midleton": ["#000000", "#ffffff"],
+  "Mogeely FC": ["#0033cc", "#ffffff"],
+  "Park United": ["#cc0000", "#000000"],
+  "Passage": ["#cc0000", "#000000"],
+  "Pearse Celtic": ["#008000", "#ffffff"],
+  "Riverstown": ["#0033cc", "#ffcc00"],
+  "Ringmahon Rangers": ["#008000", "#ffffff"],
+  "Rockmount": ["#ffcc00", "#000000"],
+  "Springfield Ramblers": ["#0033cc", "#ffffff"],
+  "St. Mary's": ["#008000", "#ffffff"],
+  "Strand United": ["#0033cc", "#ffcc00"],
+  "Tramore Athletic": ["#cc0000", "#000000"],
+  "Watergrasshill United": ["#cc0000", "#000000"],
+  "Wilton United": ["#0033cc", "#ffffff"],
+  "Youghal United": ["#008000", "#ffffff"]
+};
+
+/* LOAD EXCEL */
 const excelUrl =
   "https://raw.githubusercontent.com/mccarr10/Python-practice/main/U7%20to%20U11%20Fixtures%202026.xlsx";
 
@@ -146,6 +194,7 @@ fetch(excelUrl)
     renderTable();
   });
 
+/* PARSE HIERARCHICAL FIXTURE FORMAT */
 function parseHierarchicalData(rows) {
   let currentDate = "";
   let currentAge = "";
@@ -182,6 +231,7 @@ function parseHierarchicalData(rows) {
   }
 }
 
+/* POPULATE DROPDOWNS */
 function populateDropdowns() {
   const ageSelect = document.getElementById("ageGroup");
   const groupSelect = document.getElementById("group");
@@ -224,6 +274,7 @@ function populateDropdowns() {
   teamSelect.onchange = renderTable;
 }
 
+/* RENDER MATCH CARDS WITH TEAM COLOURS */
 function renderTable() {
   const age = document.getElementById("ageGroup").value;
   const group = document.getElementById("group").value;
@@ -237,16 +288,21 @@ function renderTable() {
     (!team || f.home === team || f.away === team)
   );
 
-  container.innerHTML = filtered.map(f => `
-    <div class="fixture-card">
-      <div class="fixture-header">${f.age} • ${f.group} • ${f.date}</div>
-      <div class="fixture-teams">${f.home} vs ${f.away}</div>
-      <div class="fixture-details">
-        <strong>Venue:</strong> ${f.venue}<br>
-        <strong>Time:</strong> ${f.time}
+  container.innerHTML = filtered.map(f => {
+    const colours = teamColours[f.home] || ["#007aff", "#ffffff"];
+    const primary = colours[0];
+
+    return `
+      <div class="fixture-card" style="border-left: 10px solid ${primary}">
+        <div class="fixture-header">${f.age} • ${f.group} • ${f.date}</div>
+        <div class="fixture-teams" style="color:${primary}">${f.home} vs ${f.away}</div>
+        <div class="fixture-details">
+          <strong>Venue:</strong> ${f.venue}<br>
+          <strong>Time:</strong> ${f.time}
+        </div>
       </div>
-    </div>
-  `).join("");
+    `;
+  }).join("");
 }
 </script>
 
