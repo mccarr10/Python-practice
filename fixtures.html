@@ -4,56 +4,17 @@
 <meta charset="UTF-8">
 <title>Fixtures Viewer</title>
 
-<!-- SheetJS library for reading Excel files -->
 <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    padding: 20px;
-    background: #f4f4f4;
-  }
-
-  h1 {
-    text-align: center;
-    margin-bottom: 30px;
-  }
-
-  .filters {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    flex-wrap: wrap;
-    margin-bottom: 20px;
-  }
-
-  select {
-    padding: 10px;
-    font-size: 16px;
-    min-width: 180px;
-  }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    background: white;
-    margin-top: 20px;
-  }
-
-  th, td {
-    border: 1px solid #ccc;
-    padding: 10px;
-    text-align: center;
-  }
-
-  th {
-    background: #2e8b57;
-    color: white;
-  }
-
-  tr:nth-child(even) {
-    background: #f9f9f9;
-  }
+  body { font-family: Arial; padding: 20px; background: #f4f4f4; }
+  h1 { text-align: center; margin-bottom: 30px; }
+  .filters { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-bottom: 20px; }
+  select { padding: 10px; font-size: 16px; min-width: 180px; }
+  table { width: 100%; border-collapse: collapse; background: white; margin-top: 20px; }
+  th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
+  th { background: #2e8b57; color: white; }
+  tr:nth-child(even) { background: #f9f9f9; }
 </style>
 </head>
 
@@ -62,24 +23,16 @@
 <h1>U7–U11 Fixtures Viewer</h1>
 
 <div class="filters">
-  <select id="ageGroup">
-    <option value="">Select Age Group</option>
-  </select>
-
-  <select id="group">
-    <option value="">Select Group</option>
-  </select>
-
-  <select id="team">
-    <option value="">Select Team</option>
-  </select>
+  <select id="ageGroup"><option value="">Select Age Group</option></select>
+  <select id="group"><option value="">Select Group</option></select>
+  <select id="team"><option value="">Select Team</option></select>
 </div>
 
 <table>
   <thead>
     <tr>
       <th>Date</th>
-      <th>Age Group</th>
+      <th>Age</th>
       <th>Group</th>
       <th>Home</th>
       <th>Away</th>
@@ -91,51 +44,61 @@
 </table>
 
 <script>
-/* ---------------------------------------------------------
-   LOAD EXCEL FILE FROM GITHUB
---------------------------------------------------------- */
+const excelUrl =
+  "https://raw.githubusercontent.com/mccarr10/Python-practice/main/U7%20to%20U11%20Fixtures%202026.xlsx";
 
-const excelUrl = "https://raw.githubusercontent.com/mccarr10/Python-practice/main/U7%20to%20U11%20Fixtures%202026.xlsx";
 let fixtures = [];
 
 fetch(excelUrl)
-  .then(response => response.arrayBuffer())
+  .then(r => r.arrayBuffer())
   .then(data => {
     const workbook = XLSX.read(data, { type: "array" });
     const sheet = workbook.Sheets[workbook.SheetNames[0]];
-    const rows = XLSX.utils.sheet_to_json(sheet);
+    const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: false });
 
-    fixtures = rows.map(r => ({
-      date: r.Date || "",
-      age: cleanAge(r["Age Group"] || ""),
-      group: cleanGroup(r["Age Group"] || ""),
-      home: r.Home || "",
-      away: r.Away || "",
-      venue: r.Venue || "",
-      time: r.Time || ""
-    }));
-
+    parseHierarchicalData(rows);
     populateDropdowns();
     renderTable();
   });
 
-/* ---------------------------------------------------------
-   CLEAN AGE GROUP LABELS (Option B)
---------------------------------------------------------- */
+function parseHierarchicalData(rows) {
+  let currentDate = "";
+  let currentAge = "";
+  let currentGroup = "";
 
-function cleanAge(label) {
-  const match = label.match(/U\d+/);
-  return match ? match[0] : label;
+  for (let row of rows) {
+    if (!row || row.length === 0) continue;
+
+    const first = row[0] ? row[0].toString().trim() : "";
+
+    // Detect date rows (start with weekday)
+    if (/^(Saturday|Sunday|Monday|Tuesday|Wednesday|Thursday|Friday)/i.test(first)) {
+      currentDate = first;
+      continue;
+    }
+
+    // Detect age-group rows (U7 G1/G2 2026)
+    if (/^U\d+\s+G[\d/]+\s+2026$/i.test(first)) {
+      const parts = first.split(" ");
+      currentAge = parts[0];      // U7
+      currentGroup = parts[1];    // G1/G2
+      continue;
+    }
+
+    // Detect fixture rows (Home | Away | Venue | Time)
+    if (row.length >= 4 && row[1] && row[2] && row[3]) {
+      fixtures.push({
+        date: currentDate,
+        age: currentAge,
+        group: currentGroup,
+        home: row[0],
+        away: row[1],
+        venue: row[2],
+        time: row[3]
+      });
+    }
+  }
 }
-
-function cleanGroup(label) {
-  const match = label.match(/G\d+/);
-  return match ? match[0] : "";
-}
-
-/* ---------------------------------------------------------
-   POPULATE DROPDOWNS (Option C)
---------------------------------------------------------- */
 
 function populateDropdowns() {
   const ageSelect = document.getElementById("ageGroup");
@@ -178,10 +141,6 @@ function populateDropdowns() {
 
   teamSelect.onchange = renderTable;
 }
-
-/* ---------------------------------------------------------
-   RENDER TABLE
---------------------------------------------------------- */
 
 function renderTable() {
   const age = document.getElementById("ageGroup").value;
