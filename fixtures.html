@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <title>Fixtures Viewer</title>
-
 <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
 <style>
@@ -14,146 +13,110 @@
     margin: 0;
   }
 
+  /* Crest */
+  .crest-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+  }
+
+  .crest {
+    width: 90px;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  }
+
   h1 {
     text-align: center;
     margin: 0 0 20px;
-    font-size: 24px;
-    font-weight: 700;
+    font-size: 26px;
+    font-weight: 800;
     color: #111;
   }
 
+  /* Premium Sky Sports style dropdowns */
   .filters {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  position: sticky;
-  top: 0;
-  background: #f2f2f7;
-  padding-bottom: 12px;
-  z-index: 10;
-}
-
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    background: #f2f2f7;
+    padding-bottom: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+  }
 
   select {
-  padding: 16px;
-  font-size: 17px;
-  border-radius: 14px;
-  border: 1px solid #d1d1d6;
-  background: #ffffff;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  width: 100%;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-  background-image: url('data:image/svg+xml;utf8,<svg fill="%23666" height="20" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
-  background-repeat: no-repeat;
-  background-position: right 14px center;
-  background-size: 18px;
-}
-
-
-  table {
     width: 100%;
-    border-collapse: collapse;
-    background: white;
-    border-radius: 14px;
-    overflow: hidden;
-    margin-top: 15px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    display: block;
-    overflow-x: auto;
-    white-space: nowrap;
-  }
-
-  th {
-    background: #007aff;
-    color: white;
-    padding: 12px;
-    font-size: 14px;
+    padding: 16px 18px;
+    font-size: 18px;
     font-weight: 600;
+    color: #111;
+    background: #ffffff;
+    border: 2px solid #e5e5ea;
+    border-radius: 14px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    transition: all 0.2s ease;
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%23007aff" height="22" viewBox="0 0 24 24" width="22" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    background-size: 22px;
   }
 
-  td {
-    padding: 12px;
-    border-bottom: 1px solid #eee;
-    font-size: 14px;
+  select:focus {
+    outline: none;
+    border-color: #007aff;
+    box-shadow: 0 0 0 3px rgba(0,122,255,0.25);
   }
 
-  tr:last-child td {
-    border-bottom: none;
+  select:hover {
+    border-color: #c7c7cc;
   }
 
-  tr:nth-child(even) {
-    background: #fafafa;
+  /* Match cards */
+  #fixtureCards {
+    margin-top: 10px;
   }
+
   .fixture-card {
-  background: white;
-  padding: 20px;
-  margin: 16px 0;
-  border-radius: 16px;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
-}
+    background: white;
+    padding: 20px;
+    margin: 16px 0;
+    border-radius: 16px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+  }
 
-.fixture-header {
-  font-size: 16px;
-  font-weight: 600;
-  color: #444;
-  margin-bottom: 10px;
-}
+  .fixture-header {
+    font-size: 16px;
+    font-weight: 600;
+    color: #444;
+    margin-bottom: 10px;
+  }
 
-.fixture-teams {
-  font-size: 20px;
-  font-weight: 700;
-  margin-bottom: 10px;
-  color: #111;
-}
+  .fixture-teams {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #111;
+  }
 
-.fixture-details {
-  font-size: 16px;
-  color: #333;
-  line-height: 1.6;
-}
-
-
-.fixture-header {
-  font-size: 14px;
-  font-weight: 600;
-  color: #555;
-  margin-bottom: 8px;
-}
-
-.fixture-teams {
-  font-size: 18px;
-  font-weight: 700;
-  margin-bottom: 6px;
-}
-
-.fixture-details {
-  font-size: 14px;
-  color: #333;
-  line-height: 1.4;
-}
-.crest-container {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 10px;
-}
-
-.crest {
-  width: 90px;        /* perfect size for iPhone */
-  height: auto;
-  border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-}
-
+  .fixture-details {
+    font-size: 16px;
+    color: #333;
+    line-height: 1.6;
+  }
 </style>
 </head>
 
 <body>
+
 <div class="crest-container">
   <img src="IMG_5104.jpeg" alt="CSL Crest" class="crest">
 </div>
-
 
 <h1>U7–U11 Fixtures Viewer</h1>
 
@@ -193,21 +156,18 @@ function parseHierarchicalData(rows) {
 
     const first = row[0] ? row[0].toString().trim() : "";
 
-    // Detect date rows (start with weekday)
     if (/^(Saturday|Sunday|Monday|Tuesday|Wednesday|Thursday|Friday)/i.test(first)) {
       currentDate = first;
       continue;
     }
 
-    // Detect age-group rows (U7 G1/G2 2026)
     if (/^U\d+\s+G[\d/]+\s+2026$/i.test(first)) {
       const parts = first.split(" ");
-      currentAge = parts[0];      // U7
-      currentGroup = parts[1];    // G1/G2
+      currentAge = parts[0];
+      currentGroup = parts[1];
       continue;
     }
 
-    // Detect fixture rows (Home | Away | Venue | Time)
     if (row.length >= 4 && row[1] && row[2] && row[3]) {
       fixtures.push({
         date: currentDate,
