@@ -77,6 +77,32 @@
   tr:nth-child(even) {
     background: #fafafa;
   }
+  .fixture-card {
+  background: white;
+  padding: 16px;
+  margin: 12px 0;
+  border-radius: 14px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.fixture-header {
+  font-size: 14px;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 8px;
+}
+
+.fixture-teams {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.fixture-details {
+  font-size: 14px;
+  color: #333;
+  line-height: 1.4;
+}
 </style>
 </head>
 
@@ -90,20 +116,7 @@
   <select id="team"><option value="">Select Team</option></select>
 </div>
 
-<table>
-  <thead>
-    <tr>
-      <th>Date</th>
-      <th>Age</th>
-      <th>Group</th>
-      <th>Home</th>
-      <th>Away</th>
-      <th>Venue</th>
-      <th>Time</th>
-    </tr>
-  </thead>
-  <tbody id="fixturesBody"></tbody>
-</table>
+<div id="fixtureCards"></div>
 
 <script>
 const excelUrl =
@@ -209,7 +222,7 @@ function renderTable() {
   const group = document.getElementById("group").value;
   const team = document.getElementById("team").value;
 
-  const tbody = document.getElementById("fixturesBody");
+  const container = document.getElementById("fixtureCards");
 
   const filtered = fixtures.filter(f =>
     (!age || f.age === age) &&
@@ -217,16 +230,15 @@ function renderTable() {
     (!team || f.home === team || f.away === team)
   );
 
-  tbody.innerHTML = filtered.map(f => `
-    <tr>
-      <td>${f.date}</td>
-      <td>${f.age}</td>
-      <td>${f.group}</td>
-      <td>${f.home}</td>
-      <td>${f.away}</td>
-      <td>${f.venue}</td>
-      <td>${f.time}</td>
-    </tr>
+  container.innerHTML = filtered.map(f => `
+    <div class="fixture-card">
+      <div class="fixture-header">${f.age} • ${f.group} • ${f.date}</div>
+      <div class="fixture-teams">${f.home} vs ${f.away}</div>
+      <div class="fixture-details">
+        <strong>Venue:</strong> ${f.venue}<br>
+        <strong>Time:</strong> ${f.time}
+      </div>
+    </div>
   `).join("");
 }
 </script>
