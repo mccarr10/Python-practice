@@ -205,6 +205,7 @@ const excelUrl =
 
 let fixtures = [];
 
+/* FETCH AND PARSE */
 fetch(excelUrl)
   .then(r => r.arrayBuffer())
   .then(data => {
@@ -217,34 +218,42 @@ fetch(excelUrl)
     renderTable();
   });
 
-/* PARSE HIERARCHICAL FIXTURE FORMAT */
+/* PARSE FIXTURES INCLUDING MERGED GROUPS */
 function parseHierarchicalData(rows) {
   let currentDate = "";
   let currentAge = "";
-  let currentGroup = "";
+  let currentGroups = [];
 
   for (let row of rows) {
     if (!row || row.length === 0) continue;
 
     const first = row[0] ? row[0].toString().trim() : "";
 
+    /* DATE ROW */
     if (/^(Saturday|Sunday|Monday|Tuesday|Wednesday|Thursday|Friday)/i.test(first)) {
       currentDate = first;
       continue;
     }
 
-    if (/^U\d+\s+G[\d/]+\s+2026$/i.test(first)) {
+    /* AGE + GROUP ROW (supports merged groups) */
+    if (/^U\d+\s+G[\d\/&-]+\s+2026$/i.test(first)) {
       const parts = first.split(" ");
       currentAge = parts[0];
-      currentGroup = parts[1];
+
+      const groupString = parts[1].replace("G", "");
+      currentGroups = groupString
+        .split(/[/&-]/)
+        .map(g => "G" + g.trim());
+
       continue;
     }
 
+    /* FIXTURE ROW */
     if (row.length >= 4 && row[1] && row[2] && row[3]) {
       fixtures.push({
         date: currentDate,
         age: currentAge,
-        group: currentGroup,
+        groups: currentGroups,
         home: row[0],
         away: row[1],
         venue: row[2],
@@ -268,7 +277,9 @@ function populateDropdowns() {
     const selectedAge = ageSelect.value;
 
     const groups = [...new Set(
-      fixtures.filter(f => f.age === selectedAge).map(f => f.group)
+      fixtures
+        .filter(f => f.age === selectedAge)
+        .flatMap(f => f.groups)
     )].sort();
 
     groupSelect.innerHTML = `<option value="">Select Group</option>` +
@@ -284,7 +295,7 @@ function populateDropdowns() {
 
     const teams = [...new Set(
       fixtures
-        .filter(f => f.age === selectedAge && f.group === selectedGroup)
+        .filter(f => f.age === selectedAge && f.groups.includes(selectedGroup))
         .flatMap(f => [f.home, f.away])
     )].sort();
 
@@ -297,7 +308,7 @@ function populateDropdowns() {
   teamSelect.onchange = renderTable;
 }
 
-/* RENDER MATCH CARDS WITH HOME/AWAY COLOURS */
+/* RENDER MATCH CARDS */
 function renderTable() {
   const age = document.getElementById("ageGroup").value;
   const group = document.getElementById("group").value;
@@ -307,7 +318,7 @@ function renderTable() {
 
   const filtered = fixtures.filter(f =>
     (!age || f.age === age) &&
-    (!group || f.group === group) &&
+    (!group || f.groups.includes(group)) &&
     (!team || f.home === team || f.away === team)
   );
 
@@ -321,10 +332,10 @@ function renderTable() {
     return `
       <div class="fixture-card"
            style="--home-colour:${homePrimary}; --away-colour:${awayPrimary}">
-        <div class="fixture-header">${f.age} • ${f.group} • ${f.date}</div>
+        <div class="fixture-header">${f.age} • ${f.groups.join("/")} • ${f.date}</div>
         <div class="fixture-teams">
-  ${f.home} <span style="color:#111">vs</span> ${f.away}
-</div>
+          ${f.home} <span style="color:#111">vs</span> ${f.away}
+        </div>
         <div class="fixture-details">
           <strong>Venue:</strong> ${f.venue}<br>
           <strong>Time:</strong> ${f.time}
