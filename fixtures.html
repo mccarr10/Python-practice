@@ -35,7 +35,7 @@
     color: #111;
   }
 
-  /* Premium Sky Sports style dropdowns */
+  /* Premium dropdowns */
   .filters {
     display: flex;
     flex-direction: column;
@@ -88,7 +88,30 @@
     margin: 16px 0;
     border-radius: 16px;
     box-shadow: 0 3px 8px rgba(0,0,0,0.08);
-    border-left: 10px solid #007aff;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Left colour bar (home) */
+  .fixture-card::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 12px;
+    height: 100%;
+    background: var(--home-colour, #007aff);
+  }
+
+  /* Right colour bar (away) */
+  .fixture-card::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 12px;
+    height: 100%;
+    background: var(--away-colour, #ff3b30);
   }
 
   .fixture-header {
@@ -274,7 +297,7 @@ function populateDropdowns() {
   teamSelect.onchange = renderTable;
 }
 
-/* RENDER MATCH CARDS WITH TEAM COLOURS */
+/* RENDER MATCH CARDS WITH HOME/AWAY COLOURS */
 function renderTable() {
   const age = document.getElementById("ageGroup").value;
   const group = document.getElementById("group").value;
@@ -289,13 +312,21 @@ function renderTable() {
   );
 
   container.innerHTML = filtered.map(f => {
-    const colours = teamColours[f.home] || ["#007aff", "#ffffff"];
-    const primary = colours[0];
+    const homeColours = teamColours[f.home] || ["#007aff", "#ffffff"];
+    const awayColours = teamColours[f.away] || ["#ff3b30", "#ffffff"];
+
+    const homePrimary = homeColours[0];
+    const awayPrimary = awayColours[0];
 
     return `
-      <div class="fixture-card" style="border-left: 10px solid ${primary}">
+      <div class="fixture-card"
+           style="--home-colour:${homePrimary}; --away-colour:${awayPrimary}">
         <div class="fixture-header">${f.age} • ${f.group} • ${f.date}</div>
-        <div class="fixture-teams" style="color:${primary}">${f.home} vs ${f.away}</div>
+        <div class="fixture-teams">
+          <span style="color:${homePrimary}">${f.home}</span>
+          <span style="color:#111"> vs </span>
+          <span style="color:${awayPrimary}">${f.away}</span>
+        </div>
         <div class="fixture-details">
           <strong>Venue:</strong> ${f.venue}<br>
           <strong>Time:</strong> ${f.time}
