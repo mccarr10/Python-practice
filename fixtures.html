@@ -323,10 +323,8 @@ function renderTable() {
            style="--home-colour:${homePrimary}; --away-colour:${awayPrimary}">
         <div class="fixture-header">${f.age} • ${f.group} • ${f.date}</div>
         <div class="fixture-teams">
-          <span style="color:${homePrimary}">${f.home}</span>
-          <span style="color:#111"> vs </span>
-          <span style="color:${awayPrimary}">${f.away}</span>
-        </div>
+  ${f.home} <span style="color:#111">vs</span> ${f.away}
+</div>
         <div class="fixture-details">
           <strong>Venue:</strong> ${f.venue}<br>
           <strong>Time:</strong> ${f.time}
