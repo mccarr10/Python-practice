@@ -235,15 +235,20 @@ function parseHierarchicalData(rows) {
       continue;
     }
 
-    /* AGE + GROUP ROW (supports merged groups) */
-    if (/^U\d+\s+G[\d\/&-]+\s+2026$/i.test(first)) {
+    /* AGE + GROUP ROW (bulletproof merged group detection) */
+    if (/^U\d+\s+G.+/i.test(first)) {
       const parts = first.split(" ");
       currentAge = parts[0];
 
-      const groupString = parts[1].replace("G", "");
-      currentGroups = groupString
-        .split(/[/&-]/)
-        .map(g => "G" + g.trim());
+      const groupRaw = first
+        .replace(/^U\d+\s+G/i, "")
+        .replace(/2026/i, "")
+        .trim();
+
+      currentGroups = groupRaw
+        .split(/[/&,\-\s]+/)
+        .filter(g => g.length > 0)
+        .map(g => "G" + g.replace(/[^0-9]/g, ""));
 
       continue;
     }
@@ -348,3 +353,4 @@ function renderTable() {
 
 </body>
 </html>
+
